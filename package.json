@@ -1,0 +1,20 @@
+{
+  "name": "dynamic_personal_server",
+  "version": "0.0.0",
+  "description": "This server will allow to authenticated users to have personalized space.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "dynamic_personal_server"
+  },
+  "keywords": [
+    "nodejs",
+    "server",
+    "dynamic"
+  ],
+  "author": "Diogo Almiro",
+  "license": "MIT"
+}
