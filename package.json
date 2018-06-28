@@ -16,5 +16,8 @@
     "dynamic"
   ],
   "author": "Diogo Almiro",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
