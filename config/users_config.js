@@ -1,4 +1,5 @@
 module.exports = {
-	home : "users/",
-	serverName : "server.js"
+	HOME : "users/",
+	SERVER : "server.js",
+	PUBLIC : "public/"
 }
