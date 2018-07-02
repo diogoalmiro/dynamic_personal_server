@@ -5,6 +5,7 @@ const usersConfig = require("../config/users_config.js");
 const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
+const serveIndex = require('serve-index');
 
 const userFolder = (req) => path.resolve(usersConfig.HOME, req.params.userid);
 const userServer = (req) => path.resolve(userFolder(req), usersConfig.SERVER);
@@ -32,11 +33,11 @@ app.use("/:userid", (req, res, next)=>
 
 // Send public files of userid (or index.html)
 app.use("/:userid", (req, res, next) =>
-	res.sendFile(req.url, {root : userPublic(req)}, (err) => err == null ? next() : false ));
+	res.sendFile(req.url, {root : userPublic(req)}, (err) => err  ? next() : 0 ));
 
 // Send ls of public folder
 app.use("/:userid", (req, res, next) =>
-	next()); // TODO
+	serveIndex(userPublic(req))(req, res, next));
 
-// Catch errors
+// Catch errors (should we report them or not?)
 app.use("/:userid", (err, req, res, next)=>next(err));
