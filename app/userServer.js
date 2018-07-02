@@ -6,13 +6,15 @@ const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 const serveIndex = require('serve-index');
+const users = require("./util/users.js");
 
 const userFolder = (req) => path.resolve(usersConfig.HOME, req.params.userid);
 const userServer = (req) => path.resolve(userFolder(req), usersConfig.SERVER);
 const userPublic = (req) => path.resolve(userFolder(req), usersConfig.PUBLIC);
 
 // Check that userid exists
-app.use("/:userid", (req, res, next)=>
+app.use("/:userid", (req, res, next) =>
+	// TODO use users
 	fs.lstat(userFolder(req),(err, info) => !err && info.isDirectory() ?
 		next() :
 		next("User doesn't exist")));
