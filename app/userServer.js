@@ -1,20 +1,27 @@
 const app = module.exports = require("express")();
 
-const config = require("../config/users_config.js");
+const usersConfig = require("../config/users_config.js");
 
 const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 
-const userFolder = (req) => path.resolve(config.HOME, req.params.userid);
-const userServer = (req) => path.resolve(userFolder(req), config.SERVER);
-const userPublic = (req) => path.resolve(userFolder(req), config.PUBLIC);
+const userFolder = (req) => path.resolve(usersConfig.HOME, req.params.userid);
+const userServer = (req) => path.resolve(userFolder(req), usersConfig.SERVER);
+const userPublic = (req) => path.resolve(userFolder(req), usersConfig.PUBLIC);
 
+// Check that userid exists
+app.use("/:userid", (req, res, next)=>
+	fs.lstat(userFolder(req),(err, info) => !err && info.isDirectory() ?
+		next() :
+		next("User doesn't exist")));
+
+// Try using a server
 app.use("/:userid", (req, res, next)=>
 	fs.readFile(userServer(req), (err,data)=>{
 		if( err ) return next(); // It's not a error to not have server.js static will be used
 		const script = new vm.Script(data);
-		let sandbox = {req, res, next, __dirname : userFolder(req)};
+		let sandbox = {req, res, next, __dirname : userFolder(req)}; // TODO improve sandbox
 		vm.createContext(sandbox);
 		try{
 			script.runInContext(sandbox, {timeout:5000});
@@ -23,6 +30,13 @@ app.use("/:userid", (req, res, next)=>
 		}
 	}));
 
+// Send public files of userid (or index.html)
 app.use("/:userid", (req, res, next) =>
-	res.sendFile(req.url, {root : userPublic(req)}, (err) =>
-		next(err)));
+	res.sendFile(req.url, {root : userPublic(req)}, (err) => err == null ? next() : false ));
+
+// Send ls of public folder
+app.use("/:userid", (req, res, next) =>
+	next()); // TODO
+
+// Catch errors
+app.use("/:userid", (err, req, res, next)=>next(err));

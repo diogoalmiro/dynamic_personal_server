@@ -1,3 +1,4 @@
+users/
 # Config
 *.pem
 config/keys.json
