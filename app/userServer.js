@@ -24,10 +24,10 @@ app.use("/:userid", (req, res, next)=>
 	fs.readFile(userServer(req), (err,data)=>{
 		if( err ) return next(); // It's not a error to not have server.js static will be used
 		const script = new vm.Script(data);
-		let sandbox = {req, res, next, __dirname : userFolder(req)}; // TODO improve sandbox
+		let sandbox = {console,next/*req, res, next, __dirname : userFolder(req)*/}; // TODO improve sandbox
 		vm.createContext(sandbox);
 		try{
-			script.runInContext(sandbox, {timeout:5000});
+			script.runInContext(sandbox, {timeout:2000});
 		} catch(e){
 			return next(e);
 		}
@@ -35,7 +35,7 @@ app.use("/:userid", (req, res, next)=>
 
 // Send public files of userid (or index.html)
 app.use("/:userid", (req, res, next) =>
-	res.sendFile(req.url, {root : userPublic(req)}, (err) => err  ? next() : 0 ));
+	res.sendFile(req.url, {root : userPublic(req)}, (err) => !err || next()));
 
 // Send ls of public folder
 app.use("/:userid", (req, res, next) =>
